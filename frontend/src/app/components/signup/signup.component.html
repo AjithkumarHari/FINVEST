@@ -37,14 +37,20 @@
                     <h4 class="my-2 font-medium text-gray-400 xl:text-xl">Welcome to <span class="text-[#3c7fbc]">FINVEST</span>!</h4>
                     <p class="mb-2 text-gray-500">Please sign-up to create an account</p>
 
-                    <form id="" class="mb-4" action="#" method="POST">
+                    <form id="" class="mb-4" [formGroup]="form">
                         <div class="mb-4">
                             <label for="name"
                                 class="mb-2 inline-block text-xs font-medium uppercase text-gray-700">User Name </label>
                             <input type="text"
-                                class="block w-full cursor-text appearance-none rounded-md border border-gray-400 bg--100 py-2 px-3 text-sm outline-none focus:border-indigo-500 focus:bg-white focus:text-gray-600 focus:shadow"
                                 id="name" name="username" placeholder="Enter your name"
-                                autofocus="" />
+                                formControlName="name"
+                                autofocus="" 
+                                class="block w-full cursor-text appearance-none rounded-md border border-gray-400 bg--100 py-2 px-3 text-sm outline-none focus:border-indigo-500 focus:bg-white focus:text-gray-600 focus:shadow"
+                                [ngClass]="{
+                                    ' border-red-300': form.get('name')?.invalid && form.get('name')?.touched,
+                                    'border-green-600': !form.get('name')?.invalid && !form.get('name')?.touched
+                                }"/>
+                            <p *ngIf="!form.get('name')?.valid && !form.get('name')?.untouched"  class="mt-2 text-xs text-red-600 "> <span class="font-medium">Oh, snapp! </span>Username must be valid.</p>
                         </div>
                         <div class="mb-4">
                             <label for="email"
@@ -52,24 +58,31 @@
                             <input type="text"
                                 class="block w-full cursor-text appearance-none rounded-md border border-gray-400 bg--100 py-2 px-3 text-sm outline-none focus:border-indigo-500 focus:bg-white focus:text-gray-600 focus:shadow"
                                 id="email" name="email" placeholder="Enter your email"
-                                autofocus="" />
+                                formControlName="email"
+                                autofocus=""
+                                [ngClass]="{
+                                    ' border-red-300': form.get('email')?.invalid && form.get('email')?.touched,
+                                    'border-green-600': !form.get('email')?.invalid && !form.get('email')?.touched
+                                }" />
+                            <p *ngIf="!form.get('email')?.valid && !form.get('email')?.untouched"  class="mt-2 text-xs text-red-600 "> <span class="font-medium">Oh, snapp! </span>E-mail must be valid.</p>
                         </div>
                         <div class="mb-4">
-                            
-                                <label class="inline-block text-xs font-medium uppercase text-gray-700"
-                                    for="password">Password</label>
-
-                            
+                            <label class="inline-block text-xs font-medium uppercase text-gray-700" for="password">Password</label>
                             <div class="relative flex w-full flex-wrap items-stretch">
                                 <input type="password" id="password"
+                                    formControlName="password"
                                     class="relative block flex-auto cursor-text appearance-none rounded-md border border-gray-400 bg--100 py-2 px-3 text-sm outline-none focus:border-indigo-500 focus:bg-white focus:text-gray-600 focus:shadow"
-                                    name="password" placeholder="············" />
-                            </div>
+                                    name="password" placeholder="············" 
+                                    [ngClass]="{
+                                        ' border-red-300': form.get('password')?.invalid && form.get('password')?.touched,
+                                        'border-green-600': !form.get('password')?.invalid && !form.get('password')?.touched
+                                    }"/>
+                                <p *ngIf="!form.get('password')?.valid && !form.get('password')?.untouched"  class="mt-2 text-xs text-red-600 "> <span class="font-medium">Oh, snapp! </span>Password must have capital letter, number and a symbol.</p>                            </div>
                         </div>
                         <div class="py-4">
                             <button
                                 class="grid w-full cursor-pointer select-none rounded-md border border-indigo-500 bg-indigo-500 py-2 px-5 text-center align-middle text-sm text-white shadow hover:border-indigo-600 hover:bg-indigo-600 hover:text-white focus:border-indigo-600 focus:bg-indigo-600 focus:text-white focus:shadow-none"
-                                type="submit">Sign in</button>
+                                type="submit" (click)="onFormSubmit()">Sign in</button>
                         </div>
                     </form>
 
