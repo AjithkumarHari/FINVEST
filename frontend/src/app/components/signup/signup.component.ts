@@ -4,6 +4,8 @@ import { RouterLink, RouterOutlet } from '@angular/router';
 import { User } from '../../types/User';
 import { NgClass, NgIf } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
+import { Store } from '@ngrx/store';
+import { signupRequest } from '../../state/user.action';
 
 @Component({
   selector: 'app-signup',
@@ -23,7 +25,7 @@ export class SignupComponent {
   errorMessage: any = "";
   form !: FormGroup;
 
-  constructor(private formBuilder : FormBuilder, private authService:AuthService){}
+  constructor(private formBuilder : FormBuilder, private authService:AuthService, private store: Store){}
 
   ngOnInit(): void {
     console.log('initilaized' );
@@ -48,12 +50,12 @@ export class SignupComponent {
       console.log('userData',user);
 
  
-      this.authService.signup(user).subscribe((data)=>{
-        console.log('data',data);
+      // this.authService.signup(user).subscribe((data)=>{
+      //   console.log('data',data);
         
-      })
+      // })
       
-      // this.store.dispatch(signupRequest({user}))
+      this.store.dispatch(signupRequest({user}))
       // this.store.pipe(select(selectErrorMessage)).subscribe((error) => this.errorMessage = error); 
     }
   }

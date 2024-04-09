@@ -10,7 +10,7 @@ export class CreateAuthDto {
     email: string
 
     @IsString()
-    @Length(9,9,{message:"password must have 8 characters"})	
+    @Length(9,9,{message:"password must have 9 characters"})	
     password: string
 
 }
