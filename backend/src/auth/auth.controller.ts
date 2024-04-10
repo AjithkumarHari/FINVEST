@@ -15,6 +15,8 @@ export class AuthController {
 
   @Post('login')
   userLogin(@Body(ValidationPipe) credentialsAuthDto: CredentialsAuthDto) {
+    console.log("in login controller");
+     
     return this.authService.login(credentialsAuthDto);
   }
 

@@ -50,7 +50,7 @@ const _authReducer = createReducer(
     on(signupFailure,(state,{error})=>{
         console.log(error.error.message);
         
-        return {
+        return { 
             ...state,
             UserToken: " ",
             errorMessage: error.error.message

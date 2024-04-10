@@ -7,11 +7,14 @@ import { Model } from 'mongoose';
 import { CredentialsAuthDto } from './dto/credentials-auth.dto';
 import * as bcrypt from 'bcryptjs';
 import  * as jwt from 'jsonwebtoken';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
 
-  constructor(@InjectModel(User.name) private userModel: Model<User>){}
+
+
+  constructor(@InjectModel(User.name) private userModel: Model<User>, private configService: ConfigService){}
 
   async register(createAuthDto: CreateAuthDto) {
     const existingUser: User | null = await this.userModel.findOne({email: createAuthDto.email});
@@ -22,20 +25,24 @@ export class AuthService {
     const newUser = new this.userModel(createAuthDto);
     newUser.save();
     const { id,name,email }= newUser;
-    const token = jwt.sign({id},'ghjghjgjhgyj',{expiresIn:"1d"})
+    const jwtSecretKey = this.configService.get<string>('JWT_SECRET_KEY');
+    const token = jwt.sign({id},jwtSecretKey,{expiresIn:"1d"})
     return { response:"success",statusCode:HttpStatus.CREATED, message:"New user created",userData:{ id,name,email },userToken: token }
   }
 
   async login(credentialsAuthDto: CredentialsAuthDto) {
-    const existingUser: User | null = await this.userModel.findOne({email: credentialsAuthDto.email});
+    const existingUser = await this.userModel.findOne({email: credentialsAuthDto.email});
     if(!existingUser){
       throw new HttpException('User does not exists!',HttpStatus.UNAUTHORIZED);
     }
     else{
-      const comparePasswords = await bcrypt.compare(credentialsAuthDto.password,existingUser.password);
+      const { id,name,email,password } = existingUser;
+      const comparePasswords = await bcrypt.compare(credentialsAuthDto.password,password);
       if(!comparePasswords)
         throw new HttpException('Password does not match!',HttpStatus.UNAUTHORIZED);
-      return `This action returns from login`;
+      const jwtSecretKey = this.configService.get<string>('JWT_SECRET_KEY');
+      const token = jwt.sign({id},jwtSecretKey,{expiresIn:"1d"})
+      return { response:"success",statusCode:HttpStatus.OK, message:"User login succcess",userData:{ id,name,email },userToken: token };
     }
   }
 

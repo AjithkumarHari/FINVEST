@@ -3,9 +3,10 @@ import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } 
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { User } from '../../types/User';
 import { NgClass, NgIf } from '@angular/common';
-import { AuthService } from '../../services/auth.service';
-import { Store } from '@ngrx/store';
+import { Store, select } from '@ngrx/store';
 import { signupRequest } from '../../state/user.action';
+import { selectErrorMessage } from '../../state/user.selector';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-signup',
@@ -25,11 +26,10 @@ export class SignupComponent {
   errorMessage: any = "";
   form !: FormGroup;
 
-  constructor(private formBuilder : FormBuilder, private authService:AuthService, private store: Store){}
+  constructor(private formBuilder : FormBuilder, private store: Store){}
 
   ngOnInit(): void {
-    console.log('initilaized' );
-    
+ 
     this.form = this.formBuilder.group({
       name: new FormControl(null, [Validators.required, Validators.pattern("^[a-zA-Z]{3,15}$")]),
       email : new FormControl(null, [Validators.required, Validators.email, Validators.pattern("[a-z0-9._%+-]+@[a-z.-]+\.[a-z]{2,4}$")]),
@@ -47,16 +47,9 @@ export class SignupComponent {
         email : this.form.value.email,
         password : this.form.value.password,
       }
-      console.log('userData',user);
 
- 
-      // this.authService.signup(user).subscribe((data)=>{
-      //   console.log('data',data);
-        
-      // })
-      
-      this.store.dispatch(signupRequest({user}))
-      // this.store.pipe(select(selectErrorMessage)).subscribe((error) => this.errorMessage = error); 
+      this.store.dispatch(signupRequest({user}));
+      this.store.pipe(select(selectErrorMessage)).pipe(take(2)).subscribe((error) => this.errorMessage = error);
     }
   }
 }

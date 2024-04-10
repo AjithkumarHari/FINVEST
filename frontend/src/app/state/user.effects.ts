@@ -29,18 +29,21 @@ export class AuthEffects{
             switchMap(({ credentials }) =>
                 this.authService.login(credentials).pipe(
                     map(res=>{
-                        let response : any = res;
-                        console.log(response);
+                        let data : any = res;
+                        console.log('in effects',data);
                         
-                        if(response.status=='success'){
-                            localStorage.setItem('user-token',response.token)
-                            localStorage.setItem('user-data',JSON.stringify(response.userData))
-                            return loginSuccess({userToken : response.token, userData: response.userData})
+                        if(data.response=='success'){
+                            console.log('success');
+                            
+
+                            sessionStorage.setItem('user-token',data.userToken)
+                            sessionStorage.setItem('user-data',JSON.stringify(data.userData))
+                            return loginSuccess({userToken: data.userToken, userData: data.userData})
                         }
                         else{
                             console.log('login error');
                             
-                            return loginFailure({ error : response.error.error  })
+                            return loginFailure({ error : data.error.error  })
                         }
                     }),
                     catchError(error => of (loginFailure({ error })))
@@ -53,6 +56,7 @@ export class AuthEffects{
         this.actions$.pipe(
             ofType(loginSuccess),
             tap(( )=>{
+                console.log('login success');
                 this.router.navigate(['/']);  
             })
         ), {
@@ -82,18 +86,12 @@ export class AuthEffects{
                 this.authService.signup(user).pipe(
                     map(res=>{
                         let data : any = res;
-                        console.log('in effects',data);
-                        
                         if(data.response=='success'){
-                            console.log('success',data);
-                            
                             sessionStorage.setItem('user-token',data.userToken)
                             sessionStorage.setItem('user-data',JSON.stringify(data.userData))
                             return signupSuccess({userToken : data.userToken, userData: data.userData})
                         }
                         else{
-                            console.log('signup error');
-                            
                             return signupFailure({ error : data.error.error  })
                         }
                     }),
@@ -107,8 +105,6 @@ export class AuthEffects{
         this.actions$.pipe(
             ofType(signupSuccess),
             tap(()=>{
-                console.log('signup success');
-                
                 this.router.navigate(['/']);
             })
         ), {
@@ -120,10 +116,8 @@ export class AuthEffects{
         this.actions$.pipe(
             ofType(signupFailure),
             tap(()=>{
-                console.log('sign up faliure');
-                
                 this.router.navigate(['/signup'])
-            })
+            }) 
         ), {
             dispatch: false
         }
